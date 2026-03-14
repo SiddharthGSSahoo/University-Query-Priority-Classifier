@@ -1,3 +1,12 @@
+"""
+src/transformers.py
+────────────────────────────────────────────────────────
+Custom sklearn-compatible transformers used in the
+UniQuery Priority Classification pipeline.
+
+Import in training notebooks and in app.py so that
+joblib can deserialise the saved ModelPipeline.pkl.
+"""
 import pandas as pd
 import numpy as np
 import re
@@ -8,6 +17,19 @@ from nltk.corpus import stopwords
 from textblob import TextBlob
 
 class Preprocess(BaseEstimator,TransformerMixin):
+    
+    """
+    Text pre-processing transformer compatible with sklearn
+    Pipeline and ColumnTransformer.
+
+    Steps applied per document:
+        1. Lowercase
+        2. Punctuation removal
+        3. Short-form / slang expansion
+        4. Emoji removal
+        5. Spell correction (TextBlob) — optional, slow
+        6. Stopword removal + Porter stemming
+    """
     def __init__(self):
         self.Punctuations=set(string.punctuation)
         self.ShortForm={"$" : " dollar ",
@@ -289,11 +311,16 @@ class Preprocess(BaseEstimator,TransformerMixin):
         Text="".join(ch for ch in Text if ch not in self.Punctuations) # Removes Punctuations...
         Text=" ".join([self.ShortForm.get(word,word) for word in Text.split()]) # Converts ShortForms...
         Text=self.Emoji_Pattern.sub(r'',Text) # Removes Emojis...
-        Text=TextBlob(Text).correct().string # Corrects Spellings...
+        #Text=TextBlob(Text).correct().string # Corrects Spellings...
         Text=" ".join([self.Stemmer.stem(word) for word in Text.split() if word not in self.Stopwords]) # Stemming and Removes Stopwords...
         return Text
 
 class ArrayFlattener(BaseEstimator,TransformerMixin):
+    """
+    Flattens a 2-D array to 1-D so that CountVectorizer /
+    TfidfVectorizer (which expect a 1-D iterable of strings)
+    can be used inside a ColumnTransformer sub-pipeline.
+    """
     def fit(self,X,y=None):
         return self
     def transform(self,X):
