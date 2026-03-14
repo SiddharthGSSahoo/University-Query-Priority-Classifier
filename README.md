@@ -20,12 +20,13 @@ The system utilizes a custom preprocessing engine and a nested Scikit-Learn Pipe
 ## 📂 Project Structure
 ```text
 ├── data/
-│   └── university_query_train.csv    # Dataset
+│   └── University_Query.csv    # Dataset
 ├── models/
-│   ├── university_nlp_pipeline.pkl  # Trained Pipeline object
-│   └── label_map.pkl                # Numerical to Label mapping
+│   ├── ModelPipeline.pkl  # Trained Pipeline object
+│   └── Label_Map.pkl                # Numerical to Label mapping
 ├── notebooks/
-│   └── Training_EDA.ipynb           # Data analysis & Model training
+│   └── Pipelining.ipynb           # Data analysis & Model training
+|       TextPreprocessing.ipynb
 ├── src/
 │   └── transformers.py              # Custom Preprocess & Flattener classes
 ├── app.py                           # Streamlit Web Application
